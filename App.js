@@ -25,7 +25,12 @@ export default function App() {
   }, [coordinates])
 
   async function fetchWeatherByCoords(coords) {
-    const weatheResponse = await MeteoAPI.fetchWeatherByCoords(coords)
+    try {
+      const weatherResponse = await MeteoAPI.fetchWeatherByCoords(coords)
+      setWeather(weatherResponse)
+    } catch (error) {
+      console.error('Error fetching weather data:', error)
+    }
   }
 
   async function getUserCoordinates() {
@@ -40,7 +45,7 @@ export default function App() {
       setCoordinates({ lat: '48.85', lng: '2.35' })
     }
   }
-  console.log(coordinates)
+
   console.log(weather)
   return (
     <ImageBackground
