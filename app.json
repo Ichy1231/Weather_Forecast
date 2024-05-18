@@ -2,7 +2,10 @@
   "expo": {
     "name": "react-native-meteo",
     "slug": "react-native-meteo",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "plugins": [
+      "expo-font"
+    ]
   },
   "name": "react-native-meteo"
 }
