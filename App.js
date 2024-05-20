@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
-import { ImageBackground, Text, View } from 'react-native'
+import { Alert, ImageBackground, Text, View } from 'react-native'
 import { s } from './App.style'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import { Home } from './pages/Forecast/Forecast'
-import { Forecast } from './pages/Home/Home'
+import { Home } from './pages/Home/Home'
+import { Forecast } from './pages/Forecast/Forecast'
 import backgroundImg from './assests/background.png'
 import {
   requestForegroundPermissionsAsync,
@@ -16,6 +16,11 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 const Stack = createNativeStackNavigator()
 
+const navTheme = {
+  colors: {
+    background: 'transparent',
+  },
+}
 export default function App() {
   const [coordinates, setCoordinates] = useState()
   const [weather, setWeather] = useState()
@@ -37,6 +42,7 @@ export default function App() {
 
   async function fetchWeatherByCoords(coords) {
     try {
+      console.log('fetchWeatherByCoords > ', coords)
       const weatherResponse = await MeteoAPI.fetchWeatherByCoords(coords)
       setWeather(weatherResponse)
     } catch (error) {
@@ -45,11 +51,22 @@ export default function App() {
   }
 
   async function fetchCityByCoords(coords) {
+    console.log(coords)
     try {
       const cityResponse = await MeteoAPI.fetchCityByCoords(coords)
       setCity(cityResponse)
     } catch (error) {
       console.error('Error fetching City data:', error)
+    }
+  }
+
+  async function fetchCoordsByCity(city) {
+    try {
+      const coordsResponse = await MeteoAPI.fetchCoordsByCity(city)
+      console.log('coordsResponse >', coordsResponse)
+      setCoordinates(coordsResponse)
+    } catch (err) {
+      Alert.alert('Ouch', err)
     }
   }
 
@@ -65,8 +82,9 @@ export default function App() {
       setCoordinates({ lat: '48.85', lng: '2.35' })
     }
   }
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navTheme}>
       <ImageBackground
         imageStyle={s.img}
         style={s.img_background}
@@ -75,8 +93,19 @@ export default function App() {
         <SafeAreaProvider>
           <SafeAreaView style={s.container}>
             {isFontLoaded && weather && (
-              <Stack.Navigator initialRouteName='Home'>
-                <Stack.Screen name='Home' component={Home} />
+              <Stack.Navigator
+                screenOptions={{ headerShown: false }}
+                initialRouteName='Home'
+              >
+                <Stack.Screen name='Home'>
+                  {() => (
+                    <Home
+                      city={city}
+                      weather={weather}
+                      onSubmitSearch={fetchCoordsByCity}
+                    />
+                  )}
+                </Stack.Screen>
                 <Stack.Screen name='Forecast' component={Forecast} />
               </Stack.Navigator>
             )}

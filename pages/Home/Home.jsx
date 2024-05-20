@@ -4,8 +4,9 @@ import { Txt } from '../../components/Txt/Txt'
 import { MateoBasic } from '../../components/Txt/MeteoBasic/MateoBasic'
 import { getWeatherInterpretation } from '../../utils/meteo-utils'
 import { MeteoAdvanced } from '../../components/MeteoAdvanced/MeteoAdvanced'
+import { SearchBar } from '../../components/SearchBar/SearchBar'
 
-export function Home({ weather, city }) {
+export function Home({ weather, city, onSubmitSearch }) {
   const currentWeather = weather.current_weather
   const currentInterpretation = getWeatherInterpretation(
     currentWeather.weathercode
@@ -14,13 +15,14 @@ export function Home({ weather, city }) {
     <>
       <View style={s.mateo_basic}>
         <MateoBasic
+          dailyWeather={weather.daily}
           city={city}
           interpretation={currentInterpretation}
           temperature={Math.round(currentWeather.temperature)}
         />
       </View>
       <View style={s.searchbar_container}>
-        <Txt style={s.txt}>SearchBar</Txt>
+        <SearchBar onSubmit={onSubmitSearch} />
       </View>
       <View style={s.meteo_advanced}>
         <MeteoAdvanced
